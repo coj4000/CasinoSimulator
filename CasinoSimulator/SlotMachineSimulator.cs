@@ -86,30 +86,56 @@ namespace CasinoSimulator
         {
             credits = credits + moreCredits;
         }
+        public void PrintMessageBeforeSpin()
+        {
+            Console.WriteLine();
+            Console.WriteLine("Credits left : {0}, now spinning...", credits);
+        }
+        public void SpinAllDials()
+        {
+            dial1 = SpinDial();
+            dial2 = SpinDial();
+            dial3 = SpinDial();
+        }
+        public void PrintOutcomeOfSpin(int winnings)
+        {
+            Console.WriteLine("You got : {0} {1} {2}", dial1, dial2, dial3);
+            if (winnings == 0)
+            {
+                Console.WriteLine("Sorry you did not win anything");
+            }
+            else if (winnings == 1)
+            {
+                Console.WriteLine("You won 1 credit");
+            }
+            else
+            {
+                Console.WriteLine("You won {0} credits congratulations", winnings);
+            }
 
+            Console.WriteLine("Credits left : {0}", credits);
+        }
         // Perform one spin on the machine
         public void Spin()
         {
             // Inform the player how many credits are left before spinning
-            Console.WriteLine();
-            Console.WriteLine("Credits left : {0}, now spinning...", credits);
+
+            PrintMessageBeforeSpin();
 
             // One spin costs one credit
             credits--;
-        
+
             // Spin the dials
-            dial1 = SpinDial();
-            dial2 = SpinDial();
-            dial3 = SpinDial();
+
+            SpinAllDials();
         
             // Find the winnings, and update the credits left
             int winnings = CalculateWinnings(dial1,dial2,dial3);
             credits = credits + winnings;
 
             // Report the outcome of the spin to the player
-            Console.WriteLine("You got : {0} {1} {2}", dial1, dial2, dial3);
-            Console.WriteLine("You won {0} credit(s)", winnings);
-            Console.WriteLine("Credits left : {0}", credits);
+            PrintOutcomeOfSpin(winnings);
+           
         }
 
         // Print the complete winning table
@@ -160,15 +186,15 @@ namespace CasinoSimulator
         // Calculate the winnings corresponding to the given dial combination
         private int CalculateWinnings(string dial1, string dial2, string dial3)
         {
-            if ((dial1 == "7") && (dial2 == "7") && (dial3 == "7"))
+            if (CountSymbols("7", dial1, dial2, dial3) == 3)
             {
                 return winningSeven3;
             }
-            else if ((dial1 == "#") && (dial2 == "#") && (dial3 == "#"))
+            else if (CountSymbols("#", dial1, dial2, dial3) == 3)
             {
                 return winningSharp3;
             }
-            else if ((dial1 == "@") && (dial2 == "@") && (dial3 == "@"))
+            else if (CountSymbols("@", dial1, dial2, dial3) == 3)
             {
                 return winningAt3;
             }

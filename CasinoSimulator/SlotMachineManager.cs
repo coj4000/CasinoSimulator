@@ -24,8 +24,11 @@ namespace CasinoSimulator
         // a new spin on the slot machine is done
         public void RunSimulation()
         {
+            SlotMachineSimulator theSilmulator = new SlotMachineSimulator();
+
+
             // Reset the simulator, so we start from the initial state
-            theSimulator.Reset();
+            //thesimulator.reset();
 
             Console.WriteLine("Slot Machine Simulator Starting...");
             Console.WriteLine();
@@ -33,11 +36,11 @@ namespace CasinoSimulator
             // Print the winning table, for the players convenience
             theSimulator.PrintWinningTable();
 
-            Console.WriteLine("You get 10 credits to play for...");
+            Console.WriteLine("You get 25 credits to play for...");
             Console.WriteLine();
 
             // Add 10 credits to play for
-            theSimulator.AddCredits(10);
+            theSimulator.AddCredits(25);
 
             // The main loop: while the player still wants to play - and
             // has money left - a new spin is performed
@@ -51,7 +54,17 @@ namespace CasinoSimulator
                 {
                     // The player has money left, so ask the player
                     // if (s)he wants to play again
-                    playAgain = AskPlayerToPlayOrQuit();
+                    if (theSimulator.GetCredits() < 10)
+                    {
+                        Console.WriteLine("WARNING! You have less than 10 credits left");
+                        playAgain = AskPlayerToPlayOrQuit();
+                    }
+                    else
+                    {
+
+                        playAgain = AskPlayerToPlayOrQuit();
+                    }
+                  
                 }
                 else
                 {
