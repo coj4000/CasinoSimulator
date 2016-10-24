@@ -15,7 +15,7 @@ namespace CasinoSimulator
 
         public SlotMachineManager()
         {
-            theSimulator = new SlotMachineSimulator();
+            //theSimulator = new SlotMachineSimulator();
         }
 
 
@@ -36,11 +36,13 @@ namespace CasinoSimulator
             // Print the winning table, for the players convenience
             theSimulator.PrintWinningTable();
 
-            Console.WriteLine("You get 25 credits to play for...");
+            //Console.WriteLine("You get 25 credits to play for...");
+            
             Console.WriteLine();
 
             // Add 10 credits to play for
-            theSimulator.AddCredits(25);
+            //theSimulator.AddCredits(25);
+            theSimulator.AddCredits(AskPlayerToEnterANumber("Please enter an amount"));
 
             // The main loop: while the player still wants to play - and
             // has money left - a new spin is performed
@@ -57,13 +59,10 @@ namespace CasinoSimulator
                     if (theSimulator.GetCredits() < 10)
                     {
                         Console.WriteLine("WARNING! You have less than 10 credits left");
-                        playAgain = AskPlayerToPlayOrQuit();
                     }
-                    else
-                    {
 
                         playAgain = AskPlayerToPlayOrQuit();
-                    }
+                    
                   
                 }
                 else
@@ -78,7 +77,26 @@ namespace CasinoSimulator
             Console.WriteLine("Slot Machine Simulator Ending...");
             Console.WriteLine();
         }
+        public void RunLongSimulation(int noOfCredits, int noOfSpins, bool silentMode)
+        {
+            SlotMachineSimulator theSimulator = new SlotMachineSimulator();
+            theSimulator.AddCredits(noOfCredits);
 
+            theSimulator.SetSilentMode(silentMode);
+            for (int spinNo = 0; spinNo < noOfSpins; spinNo++)
+            {
+                theSimulator.Spin();
+            }
+            theSimulator.SetSilentMode(false);
+
+            Console.WriteLine();
+            Console.WriteLine("Simulation done, Statistics:");
+            Console.WriteLine("Did {0} spins", noOfSpins);
+            Console.WriteLine("Started with {0} credits", noOfCredits);
+            Console.WriteLine("Ended with {0} credits", theSimulator.GetCredits());
+            Console.WriteLine();
+            theSimulator.PrintStatistics();
+        }
         // This method asks the player if (s)he wants to play again.
         // If the method returns true, the player wants to play again.
         // Otherwise, the player wants to quit.

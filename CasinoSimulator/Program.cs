@@ -16,7 +16,8 @@ namespace CasinoSimulator
 
             // Start up the slot machine simulation
             SlotMachineManager theManager = new SlotMachineManager();
-            theManager.RunSimulation();
+            // theManager.RunSimulation();
+            theManager.RunLongSimulation(100,1000000,true);
 
             Console.WriteLine("Casino Simulator Ending (press any key to close program)...");
             Console.WriteLine();

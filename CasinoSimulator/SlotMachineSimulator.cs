@@ -31,6 +31,16 @@ namespace CasinoSimulator
         // This instance variable is used for generating random numbers
         private Random generator;
 
+        private bool silentModeOn;
+
+        private int gotStar3;
+        private int gotSeven3;
+        private int gotSharp3;
+        private int gotAt3;
+        private int gotSeven2;
+        private int gotSharp2;
+        private int gotNothing;
+
 
         // CONSTANTS
 
@@ -39,17 +49,20 @@ namespace CasinoSimulator
         // 30 % for showing "#"
         // 60 % for showing "@"
         //
+        private const int probstar = 2;
         private const int probSeven = 10;
         private const int probSharp = 30;
         private const int probAt = 60;
 
         // The winnings paid to the player for certain dial combinations
+        // * * * pasy 1000
         // 7 7 7 pays 150
         // # # # pays 10
         // @ @ @ pays 1
         // any two 7 pays 5
         // any two # pays 1
         //
+        private const int winningStar3 = 1000;
         private const int winningSeven3 = 150;
         private const int winningSharp3 = 10;
         private const int winningAt3 = 1;
@@ -62,6 +75,7 @@ namespace CasinoSimulator
         //
         public SlotMachineSimulator()
         {
+            silentModeOn = false;
             generator = new Random();
             Reset();
         }
@@ -73,6 +87,23 @@ namespace CasinoSimulator
         public void Reset()
         {
             credits = 0;
+
+            gotStar3 = 0;
+            gotSeven3 = 0;
+            gotSharp3 = 0;
+            gotAt3 = 0;
+            gotSeven2 = 0;
+            gotSharp2 = 0;
+            gotNothing = 0;
+        }
+        public void SetSilentMode(bool silentModeOn)
+        {
+            this.silentModeOn = silentModeOn;
+        }
+
+        public bool GetSilentMode()
+        {
+            return silentModeOn;
         }
 
         // Returns the number of credits left in the machine
@@ -82,35 +113,27 @@ namespace CasinoSimulator
         }
     
         // Adds a number of credits to the machine
-        public void AddCredits(int moreCredits)
-        {
-            credits = credits + moreCredits;
-        }
+       
         public void PrintMessageBeforeSpin()
         {
             Console.WriteLine();
             Console.WriteLine("Credits left : {0}, now spinning...", credits);
         }
-        public void SpinAllDials()
-        {
-            dial1 = SpinDial();
-            dial2 = SpinDial();
-            dial3 = SpinDial();
-        }
+       
         public void PrintOutcomeOfSpin(int winnings)
         {
-            Console.WriteLine("You got : {0} {1} {2}", dial1, dial2, dial3);
+            WriteLineConditional("You got : " + dial1 + " " + dial2 + "" + dial3);
             if (winnings == 0)
             {
-                Console.WriteLine("Sorry you did not win anything");
+                WriteLineConditional("Sorry you did not win anything");
             }
             else if (winnings == 1)
             {
-                Console.WriteLine("You won 1 credit");
+                WriteLineConditional("You won 1 credit");
             }
             else
             {
-                Console.WriteLine("You won {0} credits congratulations", winnings);
+                WriteLineConditional("You won " + winnings + "credits, congratulations");
             }
 
             Console.WriteLine("Credits left : {0}", credits);
@@ -137,20 +160,42 @@ namespace CasinoSimulator
             PrintOutcomeOfSpin(winnings);
            
         }
+        public void AddCredits(int moreCredits)
+        {
+            credits = credits + moreCredits;
+        }
+        public void SpinAllDials()
+        {
+            dial1 = SpinDial();
+            dial2 = SpinDial();
+            dial3 = SpinDial();
+        }
 
         // Print the complete winning table
         public void PrintWinningTable()
         {
-            Console.WriteLine("----------- Winning table for slot machine --------------");
-            Console.WriteLine(" 7 7 7 pays      {0}", winningSeven3);
-            Console.WriteLine(" # # # pays      {0}", winningSharp3);
-            Console.WriteLine(" @ @ @ pays      {0}", winningAt3);
-            Console.WriteLine(" any two 7 pays  {0}", winningSeven2);
-            Console.WriteLine(" any two # pays  {0}", winningSharp2);
-            Console.WriteLine("---------------------------------------------------------");
-            Console.WriteLine();
+            WriteLineConditional("----------- Winning table for slot machine --------------");
+            WriteLineConditional(" * * * pays      " + winningStar3);
+            WriteLineConditional(" 7 7 7 pays      " + winningSeven3);
+            WriteLineConditional(" # # # pays      " + winningSharp3);
+            WriteLineConditional(" @ @ @ pays      " + winningAt3);
+            WriteLineConditional(" any two 7 pays  " + winningSeven2);
+            WriteLineConditional(" any two # pays  " + winningSharp2);
+            WriteLineConditional("---------------------------------------------------------");
+            WriteLineConditional();
         }
-
+        public void PrintStatistics()
+        {
+            WriteLineConditional("----------- Statistics for slot machine -----------------");
+            WriteLineConditional(" * * * seen      " + gotStar3 + " times");
+            WriteLineConditional(" 7 7 7 seen      " + gotSeven3 + " times");
+            WriteLineConditional(" # # # seen      " + gotSharp3 + " times");
+            WriteLineConditional(" @ @ @ seen      " + gotAt3 + " times");
+            WriteLineConditional(" any two 7 seen  " + gotSeven2 + " times");
+            WriteLineConditional(" any two # seen  " + gotSharp2 + " times");
+            WriteLineConditional(" No win    seen  " + gotNothing + " times");
+            WriteLineConditional("---------------------------------------------------------");
+        }
 
         // PRIVATE METHODS
 
@@ -169,6 +214,10 @@ namespace CasinoSimulator
 
             // Given the random percentage, find out what the dial should show
             //
+            if (percentage < probstar)
+            {
+                return "*";
+            }
             if (percentage < probSeven)
             {
                 return "7";
@@ -186,6 +235,11 @@ namespace CasinoSimulator
         // Calculate the winnings corresponding to the given dial combination
         private int CalculateWinnings(string dial1, string dial2, string dial3)
         {
+            if (CountSymbols("*", dial1, dial2, dial3) == 3)
+            {
+                gotStar3++;
+                return winningStar3;
+            }
             if (CountSymbols("7", dial1, dial2, dial3) == 3)
             {
                 return winningSeven3;
@@ -223,6 +277,17 @@ namespace CasinoSimulator
             if (target == c3) count++;
 
             return count;
+        }
+        private void WriteLineConditional(string message)
+        {
+            if (!silentModeOn)
+            {
+                Console.WriteLine(message);
+            }
+        }
+        private void WriteLineConditional()
+        {
+            WriteLineConditional("");
         }
     }
 }
